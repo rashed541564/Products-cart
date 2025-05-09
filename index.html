@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom Styles for Popup */
+    #info-popup, #order-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* Centering Cart Box */
+    .cart-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f7fafc;
+    }
+
+    .cart-box {
+      width: 800px;
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* Highlight animation for Code Info Button */
+    @keyframes highlight {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(0, 0, 255, 1);
+      }
+      25% {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(0, 0, 255, 1);
+      }
+      50% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(0, 0, 255, 0);
+      }
+    }
+
+    .highlight {
+      animation: highlight 2s infinite;
+    }
+
+    /* Style for Place Order Button */
+    #place-order {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1.25rem;
+      padding: 15px;
+      border-radius: 10px;
+      width: 100%;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #place-order:hover {
+      background-color: #45a049;
+      cursor: pointer;
+    }
+
+    .order-btns button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .order-btns .confirm-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .order-btns .cancel-btn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .order-btns button:hover {
+      opacity: 0.8;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Info Button (Top Right) -->
+  <button id="info-btn" class="fixed top-5 right-5 z-50 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
+    🔍 Code Info
+  </button>
+
+  <!-- Code Explanation Popup -->
+  <div id="info-popup" class="flex">
+    <div class="popup-content">
+      <h3 class="text-xl font-bold mb-4 text-blue-600">💡 Code Explanation</h3>
+      <ul class="text-sm list-disc pl-5 text-gray-800 space-y-2">
+        <li><strong>TailwindCSS CDN:</strong> UI ডিজাইনকে সুন্দর ও দ্রুত করতে TailwindCSS ব্যবহার করা হয়েছে। এটি দ্রুত স্টাইলিং এর জন্য একটি ফ্রেমওয়ার্ক যা অনেকটা কাস্টম ক্লাসের মাধ্যমে কাজ করে।</li>
+        <li><strong>Cart Items:</strong> প্রতিটি প্রোডাক্ট আলাদা div দিয়ে সেজেছে। প্রতিটি আইটেমের মধ্যে unique ID, নাম, দাম, এবং পরিমাণ রয়েছে।</li>
+        <li><strong>Plus/Minus Button:</strong> ব্যবহারকারীদের জন্য সংখ্যার পরিমাণ বাড়ানোর (▲) এবং কমানোর (▼) বাটন দেওয়া হয়েছে, যেগুলি ব্যবহারকারীর জন্য আইটেমের পরিমাণ কাস্টমাইজ করতে সাহায্য করে।</li>
+        <li><strong>Remove Button:</strong> রিমুভ বাটন দিয়ে ইউজার তাদের পছন্দ অনুযায়ী প্রোডাক্ট সরাতে পারে, যাতে তারা যেকোনো সময়ে cart থেকে আইটেম রিমুভ করতে পারে।</li>
+        <li><strong>updateTotals() Function:</strong> এই ফাংশনটি প্রতিটি আইটেমের দাম আপডেট করার পর মোট দাম আপডেট করে। অর্থাৎ, প্রোডাক্টের পরিমাণ পরিবর্তন হলে, সেই অনুযায়ী মোট দাম আপডেট হয়।</li>
+        <li><strong>Place Order Button:</strong> অর্ডার প্লেস করার জন্য একটি বাটন আছে যা সফল হলে একটি কনফার্মেশন পপআপ দেখায়, যাতে ইউজার জানাতে পারেন যে তাদের অর্ডার সফলভাবে নেওয়া হয়েছে।</li>
+        <li><strong>Responsive Design:</strong> TailwindCSS ব্যবহার করে কোডটি বিভিন্ন স্ক্রীনে সুন্দরভাবে দেখতে সাহায্য করে। সুতরাং, এটি ডেস্কটপ এবং মোবাইল ডিভাইসে সমানভাবে সঠিকভাবে দেখা যাবে।</li>
+      </ul>
+      <button id="close-info" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">Got it</button>
+    </div>
+  </div>
+
+  <!-- Order Confirmation Popup -->
+  <div id="order-popup" class="flex">
+    <div class="popup-content">
+      <h3 class="text-xl font-bold mb-4 text-green-600">✔️ Confirm Your Order</h3>
+      <p class="text-lg mb-4">Are you sure you want to place the order? Please review your cart before confirming.</p>
+      <div class="order-btns flex justify-between">
+        <button id="confirm-order" class="confirm-btn w-full">Confirm</button>
+        <button id="cancel-order" class="cancel-btn w-full">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Box -->
+  <div class="cart-container">
+    <div class="cart-box" id="cart-container">
+      <!-- Delivery info -->
+      <div class="bg-green-200 text-green-800 text-sm px-3 py-2 rounded-md mb-4 flex items-center justify-between">
+        <span>You have reduced delivery charge</span>
+        <span class="font-semibold" id="delivery-charge">৳ 39</span>
+      </div>
+
+      <!-- Express Delivery -->
+      <h2 class="font-bold text-lg mb-2">🚚 Express Delivery</h2>
+
+      <!-- Item List -->
+      <div id="cart-items">
+        <!-- Item1: Dried Chillies -->
+        <div class="flex justify-between items-start border-b pb-4 mb-4 item" data-price="59">
+          <div class="flex space-x-3">
+            <div class="flex flex-col items-center justify-between">
+              <button class="plus-btn text-gray-700 text-sm hover:text-black">▲</button>
+              <div class="qty text-lg font-semibold">1</div>
+              <button class="minus-btn text-gray-700 text-sm hover:text-black">▼</button>
+            </div>
+            <img src="https://insaaf.com.bd/images/detailed/11/Dried-Chilies-or-Shukna-Morich-100gm.jpg" alt="Dried Chillies" class="w-10 h-10 object-cover"/>
+            <div>
+              <h3 class="font-medium">Dried Chillies (Shukna Morich)</h3>
+              <p class="text-sm text-gray-500">৳59 / 100 gm</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold">Taka: <span class="item-total">59</span></p>
+            <button class="remove-btn text-red-500 text-sm">✕</button>
+          </div>
+        </div>
+
+        <!-- Item2: Green Cardamom -->
+        <div class="flex justify-between items-start border-b pb-4 mb-4 item" data-price="329">
+          <div class="flex space-x-3">
+            <div class="flex flex-col items-center justify-between">
+              <button class="plus-btn text-gray-700 text-sm hover:text-black">▲</button>
+              <div class="qty text-lg font-semibold">1</div>
+              <button class="minus-btn text-gray-700 text-sm hover:text-black">▼</button>
+            </div>
+            <img src="https://m.media-amazon.com/images/I/41hET+2dRxL._AC_UF350,350_QL80_.jpg" alt="Green Cardamom" class="w-10 h-10 object-cover"/>
+            <div>
+              <h3 class="font-medium">Green Cardamom (Sobuj Elachi) Whole</h3>
+              <p class="text-sm text-gray-500">৳329 / 50 gm</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold">Taka: <span class="item-total">329</span></p>
+            <button class="remove-btn text-red-500 text-sm">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Place Order -->
+      <div class="flex justify-between items-center">
+        <button id="place-order" class="w-full text-white font-semibold">
+          Place Order
+          <span class="ml-4">Total: <span id="total">388</span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Plus Button: Increases the quantity of items
+    document.querySelectorAll(".plus-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qtyElem = btn.parentElement.querySelector(".qty");
+        const totalElem = btn.closest(".item").querySelector(".item-total");
+        let qty = parseInt(qtyElem.textContent);
+        qty++;
+        qtyElem.textContent = qty;
+        totalElem.textContent = qty * parseInt(btn.closest(".item").dataset.price);
+        updateTotals();
+      });
+    });
+
+    // Minus Button: Decreases the quantity of items
+    document.querySelectorAll(".minus-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qtyElem = btn.parentElement.querySelector(".qty");
+        const totalElem = btn.closest(".item").querySelector(".item-total");
+        let qty = parseInt(qtyElem.textContent);
+        if (qty > 1) {
+          qty--;
+          qtyElem.textContent = qty;
+          totalElem.textContent = qty * parseInt(btn.closest(".item").dataset.price);
+        }
+        updateTotals();
+      });
+    });
+
+    // Update the total price
+    function updateTotals() {
+      let total = 0;
+      document.querySelectorAll(".item").forEach((item) => {
+        total += parseInt(item.querySelector(".item-total").textContent);
+      });
+      document.getElementById("total").textContent = total;
+    }
+
+    // Show and hide popups
+    document.getElementById("info-btn").addEventListener("click", () => {
+      document.getElementById("info-popup").style.display = "flex";
+    });
+
+    document.getElementById("close-info").addEventListener("click", () => {
+      document.getElementById("info-popup").style.display = "none";
+    });
+
+    // Order Confirmation Popup
+    document.getElementById("place-order").addEventListener("click", () => {
+      document.getElementById("order-popup").style.display = "flex";
+    });
+
+    document.getElementById("confirm-order").addEventListener("click", () => {
+      alert("Order Confirmed!");
+      document.getElementById("order-popup").style.display = "none";
+    });
+
+    document.getElementById("cancel-order").addEventListener("click", () => {
+      document.getElementById("order-popup").style.display = "none";
+    });
+  </script>
+</body>
+</html>
